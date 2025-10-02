@@ -44,7 +44,7 @@ def load_user(user_id):
 
 # --- auto_preview_image helper (replace existing) ---
 YOUTUBE_PLAYLIST_FALLBACK = "https://www.gstatic.com/youtube/img/promos/growth/ytp-anotations-playlist.png"
-PLACEHOLDER_IMAGE = "https://via.placeholder.com/400x200.png?text=Resource+Preview"
+PLACEHOLDER_IMAGE = "/static/images/placeholder.svg"
 
 def _extract_youtube_id(url):
     """Return YouTube video id or None. Handles watch?v=, youtu.be/, embed/, shorts/"""
@@ -96,8 +96,13 @@ def fetch_preview_image(link):
         if vid:
             # sanitize id (remove trailing params)
             vid = vid.split('?')[0].split('&')[0]
-            # return static YouTube thumbnail (no HTTP request needed)
-            return f"https://img.youtube.com/vi/{vid}/hqdefault.jpg"
+            # Validate video ID format (should be 11 characters, alphanumeric + _ -)
+            if len(vid) == 11 and re.match(r'^[a-zA-Z0-9_-]+$', vid):
+                # return static YouTube thumbnail (no HTTP request needed)
+                return f"https://img.youtube.com/vi/{vid}/hqdefault.jpg"
+            else:
+                print(f"Invalid YouTube video ID format: {vid}")
+                return PLACEHOLDER_IMAGE
 
         # NOT a youtube video -> try open graph meta image
         headers = {"User-Agent": "Mozilla/5.0"}
@@ -279,17 +284,56 @@ def delete_resource(resource_id):
 
 @app.route('/resources')
 def resources():
-    """Resources page route with filtering"""
-    # Get filter type from query parameter
-    filter_type = request.args.get('filter_type', '')
-    # Filter resources based on type parameter
-    if filter_type and filter_type in ['Book', 'Video', 'Paper']:
-        filtered_resources = Resource.query.filter_by(type=filter_type).all()
+    """Resources page route with combined search and filtering"""
+    # Get search query and filter type from query parameters
+    search_query = request.args.get('q', '').strip()
+    filter_type = request.args.get('type', '')
+    
+    # Get counts for filter buttons (from database, not search results)
+    book_count = Resource.query.filter_by(type='Book').count()
+    video_count = Resource.query.filter_by(type='Video').count()
+    paper_count = Resource.query.filter_by(type='Paper').count()
+    total_count = Resource.query.count()
+    
+    if search_query:
+        # Use TF-IDF search with optional type filter
+        tfidf_index.build_index(Resource.query.all())
+        results = tfidf_index.search_index(search_query, type_filter=filter_type if filter_type in ['Book', 'Video', 'Paper'] else None)
+        
+        # Add score attribute to each resource for template display
+        resources_for_template = []
+        for resource, score in results:
+            resource.score = score
+            resources_for_template.append(resource)
+            
+        current_app.logger.info(f"Search q={search_query!r} with filter={filter_type} returned {len(results)} results. Index size: {tfidf_index.index_size()}")
+        
+        return render_template('resources.html', 
+                             resources=resources_for_template, 
+                             search_query=search_query,
+                             filter_type=filter_type,
+                             book_count=book_count,
+                             video_count=video_count,
+                             paper_count=paper_count,
+                             total_count=total_count,
+                             is_search=True,
+                             search_results_count=len(resources_for_template))
     else:
-        filtered_resources = Resource.query.all()
-    return render_template('resources.html', 
-                         resources=filtered_resources,
-                         filter_type=filter_type)
+        # No search query - just apply filter if present
+        if filter_type and filter_type in ['Book', 'Video', 'Paper']:
+            filtered_resources = Resource.query.filter_by(type=filter_type).all()
+        else:
+            filtered_resources = Resource.query.all()
+            
+        return render_template('resources.html', 
+                             resources=filtered_resources,
+                             search_query=search_query,
+                             filter_type=filter_type,
+                             book_count=book_count,
+                             video_count=video_count,
+                             paper_count=paper_count,
+                             total_count=total_count,
+                             is_search=False)
 
 @app.route('/debug_last')
 def debug_last():
@@ -300,53 +344,9 @@ def debug_last():
 
 @app.route('/search')
 def search():
-    q = request.args.get('q', '').strip()
-    type_filter = request.args.get('type') or None
-    
-    # Get counts for filter buttons (from database, not search results)
-    book_count = Resource.query.filter_by(type='Book').count()
-    video_count = Resource.query.filter_by(type='Video').count()
-    paper_count = Resource.query.filter_by(type='Paper').count()
-    total_count = Resource.query.count()
-    
-    if q:
-        # Rebuild index to ensure it's up to date
-        tfidf_index.build_index(Resource.query.all())
-        results = tfidf_index.search_index(q, type_filter=type_filter)
-        
-        # Add score attribute to each resource for template display
-        resources_for_template = []
-        for resource, score in results:
-            resource.score = score
-            resources_for_template.append(resource)
-            
-        current_app.logger.info(f"Search q={q!r} returned {len(results)} results. Index size: {tfidf_index.index_size()}")
-        current_app.logger.info(f"Vocab sample: {tfidf_index.vocab_sample(10)}")
-        
-        return render_template('resources.html', 
-                             resources=resources_for_template, 
-                             query=q,
-                             current_filter=type_filter,
-                             book_count=book_count,
-                             video_count=video_count,
-                             paper_count=paper_count,
-                             total_count=total_count,
-                             is_search=True,
-                             search_results_count=len(resources_for_template))
-    else:
-        if type_filter:
-            resources_for_template = Resource.query.filter_by(type=type_filter).all()
-        else:
-            resources_for_template = Resource.query.all()
-            
-        return render_template('resources.html', 
-                             resources=resources_for_template, 
-                             current_filter=type_filter,
-                             book_count=book_count,
-                             video_count=video_count,
-                             paper_count=paper_count,
-                             total_count=total_count,
-                             is_search=False)
+    """Redirect search requests to resources route for unified handling"""
+    # Redirect to resources route with the same parameters
+    return redirect(url_for('resources', **request.args))
 
 
 if __name__ == '__main__':

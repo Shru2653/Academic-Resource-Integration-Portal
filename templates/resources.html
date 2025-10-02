@@ -5,8 +5,12 @@
 <!-- Search Bar -->
 <div class="row mb-4">
   <div class="col-md-8 mx-auto">
-    <form class="input-group search-bar" action="{{ url_for('search') }}" method="get">
-      <input type="text" name="q" class="form-control" placeholder="Search by keywords, title, or tags..." value="{{ query|default('') }}">
+    <form class="input-group search-bar" action="{{ url_for('resources') }}" method="get">
+      <input type="text" name="q" class="form-control" placeholder="Search by keywords, title, or tags..." value="{{ search_query|default('') }}">
+      <!-- Preserve current filter when searching -->
+      {% if filter_type %}
+        <input type="hidden" name="type" value="{{ filter_type }}">
+      {% endif %}
       <button class="btn btn-primary px-4" type="submit"><i class="bi bi-search"></i> Search</button>
     </form>
   </div>
@@ -16,21 +20,49 @@
 <div class="row mb-4">
   <div class="col-md-10 mx-auto text-center">
     <div class="btn-group" role="group">
-      <a href="{{ url_for('resources') }}" class="btn btn-sm {% if not filter_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        All
+      <a href="{{ url_for('resources', q=search_query) if search_query else url_for('resources') }}" 
+         class="btn btn-sm {% if not filter_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        All ({{ total_count }})
       </a>
-      <a href="{{ url_for('resources', filter_type='Book') }}" class="btn btn-sm {% if filter_type=='Book' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        Books
+      <a href="{{ url_for('resources', type='Book', q=search_query) if search_query else url_for('resources', type='Book') }}" 
+         class="btn btn-sm {% if filter_type=='Book' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Books ({{ book_count }})
       </a>
-      <a href="{{ url_for('resources', filter_type='Video') }}" class="btn btn-sm {% if filter_type=='Video' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        Videos
+      <a href="{{ url_for('resources', type='Video', q=search_query) if search_query else url_for('resources', type='Video') }}" 
+         class="btn btn-sm {% if filter_type=='Video' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Videos ({{ video_count }})
       </a>
-      <a href="{{ url_for('resources', filter_type='Paper') }}" class="btn btn-sm {% if filter_type=='Paper' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        Papers
+      <a href="{{ url_for('resources', type='Paper', q=search_query) if search_query else url_for('resources', type='Paper') }}" 
+         class="btn btn-sm {% if filter_type=='Paper' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+        Papers ({{ paper_count }})
       </a>
     </div>
   </div>
 </div>
+
+<!-- Results Info -->
+{% if search_query or filter_type %}
+<div class="row mb-3">
+  <div class="col-12">
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle"></i>
+      {% if search_query and filter_type %}
+        Showing {{ resources|length }} results for "<strong>{{ search_query }}</strong>" in <strong>{{ filter_type }}</strong> category
+      {% elif search_query %}
+        Showing {{ resources|length }} results for "<strong>{{ search_query }}</strong>"
+      {% elif filter_type %}
+        Showing {{ resources|length }} <strong>{{ filter_type }}</strong> resources
+      {% endif %}
+      
+      {% if search_query or filter_type %}
+        <a href="{{ url_for('resources') }}" class="btn btn-sm btn-outline-secondary ms-2">
+          <i class="bi bi-x-circle"></i> Clear all filters
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
 
 <!-- Search Results -->
 <div class="row">
@@ -39,9 +71,9 @@
       <div class="col-md-4 mb-4">
         <div class="card shadow-sm h-100 border-0">
           {% if r.image_url %}
-            <img src="{{ r.image_url }}" class="card-img-top" alt="{{ r.title }}" onerror="this.src='https://via.placeholder.com/400x200.png?text=Resource+Preview'">
+            <img src="{{ r.image_url }}" class="card-img-top" alt="{{ r.title }}" onerror="handleImageError(this)">
           {% else %}
-            <img src="https://via.placeholder.com/400x200.png?text=Resource+Preview" class="card-img-top" alt="{{ r.title }}">
+            <img src="{{ url_for('static', filename='images/placeholder.svg') }}" class="card-img-top" alt="{{ r.title }}">
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ r.title }}</h5>
