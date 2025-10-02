@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Academic Resource Integration Portal{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section text-center">
+  <div class="container">
+    <h1 class="hero-title">📚 Academic Resource Integration Portal</h1>
+    <p class="hero-subtitle">
+      Your centralized hub for discovering, organizing, and accessing academic resources — books, videos, and research papers.
+    </p>
+    <div class="hero-buttons">
+      <a href="{{ url_for('resources') }}" class="btn-primary">
+        <i class="fas fa-book me-2"></i> Browse Resources
+      </a>
+      {% if current_user.is_authenticated %}
+        <a href="{{ url_for('admin_panel') }}" class="btn-secondary">
+          <i class="fas fa-cog me-2"></i> Admin Panel
+        </a>
+      {% else %}
+        <a href="{{ url_for('login') }}" class="btn-secondary">
+          <i class="fas fa-lock me-2"></i> Admin Login
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="container mt-5">
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-book"></i>
+        </div>
+        <h3 class="feature-title">Books</h3>
+        <p class="feature-description">Access a wide collection of academic books and textbooks across various disciplines.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-video"></i>
+        </div>
+        <h3 class="feature-title">Videos</h3>
+        <p class="feature-description">Discover educational videos, lectures, and tutorials from leading institutions.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="feature-card">
+        <div class="feature-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <h3 class="feature-title">Research Papers</h3>
+        <p class="feature-description">Explore cutting-edge research papers and academic publications.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="text-center py-4 mt-5">
+  <small class="text-muted">Made with ❤️</small>
+</div>
+{% endblock %}

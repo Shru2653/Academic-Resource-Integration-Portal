@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}Edit Resource - Academic Portal{% endblock %}
+{% block content %}
+
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card shadow border-0">
+      <div class="card-header bg-warning text-dark">
+        <h5 class="mb-0"><i class="bi bi-pencil me-2"></i> Edit Resource</h5>
+      </div>
+      <div class="card-body">
+        <form method="POST">
+          
+          <!-- Title -->
+          <div class="mb-3">
+            <label for="title" class="form-label">Resource Title</label>
+            <input type="text" class="form-control" id="title" name="title" value="{{ resource.title }}" required>
+          </div>
+
+          <!-- Type -->
+          <div class="mb-3">
+            <label for="type" class="form-label">Resource Type</label>
+            <select class="form-select" id="type" name="type" required>
+              <option value="Book" {% if resource.type == 'Book' %}selected{% endif %}>Book</option>
+              <option value="Video" {% if resource.type == 'Video' %}selected{% endif %}>Video</option>
+              <option value="Paper" {% if resource.type == 'Paper' %}selected{% endif %}>Research Paper</option>
+            </select>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" id="description" name="description" rows="4" required>{{ resource.description }}</textarea>
+          </div>
+
+          <!-- Link -->
+          <div class="mb-3">
+            <label for="link" class="form-label">Resource Link</label>
+            <input type="url" class="form-control" id="link" name="link" value="{{ resource.link }}" required>
+            <div class="form-text">Provide a valid URL where the resource can be accessed.</div>
+          </div>
+
+          <!-- Image URL -->
+          <div class="mb-3">
+            <label for="image_url" class="form-label">Image URL (Optional)</label>
+            <input type="url" class="form-control" id="image_url" name="image_url" value="{{ resource.image_url or '' }}" placeholder="Leave blank to auto-detect thumbnail">
+            <div class="form-text">Leave blank to automatically detect thumbnails from YouTube, websites, or use a default placeholder</div>
+          </div>
+
+          <!-- Tags -->
+          <div class="mb-3">
+            <label for="tags" class="form-label">Tags (comma-separated)</label>
+            <input type="text" class="form-control" id="tags" name="tags" value="{{ resource.tags or '' }}" placeholder="OS, Distributed Systems, Virtualization">
+          </div>
+
+          <!-- Current Image Preview -->
+          {% if resource.image_url %}
+          <div class="mb-3">
+            <label class="form-label">Current Image Preview</label>
+            <div>
+              <img src="{{ resource.image_url }}" alt="Current thumbnail" class="img-thumbnail" style="max-width: 200px; max-height: 150px;">
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Submit Button -->
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <a href="{{ url_for('admin_panel') }}" class="btn btn-secondary">
+              <i class="bi bi-arrow-left me-1"></i> Cancel
+            </a>
+            <button type="submit" class="btn btn-warning">
+              <i class="bi bi-check-circle me-1"></i> Save Changes
+            </button>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
