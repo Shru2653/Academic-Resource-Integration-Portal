@@ -1,101 +1,100 @@
-# Academic Resource Integration Portal
+# 📚 Academic Resource Integration Portal
 
 A Flask-based web application for managing and discovering academic resources including books, videos, and research papers.
+This portal is designed to provide students, researchers, and educators with a centralized hub for accessing and organizing learning materials.
 
-## Features
+## 🚀 Features
 
-- **Resource Management**: Store and organize academic resources with detailed metadata
-- **Search & Discovery**: Browse resources by type, tags, and keywords (coming soon)
-- **Admin Interface**: Upload and manage resources through a web interface (coming soon)
-- **Responsive Design**: Modern, mobile-friendly interface using Bootstrap
+- **Resource Management** – Add, store, and organize academic resources with metadata.
+- **Search & Discovery** – Browse resources by type, tags, and keywords (search integration with Whoosh planned).
+- **Admin Interface** – Secure admin dashboard for uploading and managing resources (under development).
+- **Responsive Design** – Modern, mobile-friendly UI powered by Bootstrap 5.
 
-## Project Structure
+## 📂 Project Structure
 
 ```
 IR Project/
-├── app.py                 # Main Flask application
-├── models.py              # SQLAlchemy database models
-├── requirements.txt       # Python dependencies
-├── whoosh_index.py       # Search functionality (placeholder)
-├── templates/            # Jinja2 templates
-│   ├── base.html         # Base template with navigation
-│   ├── home.html         # Homepage
-│   ├── admin.html        # Admin upload page
-│   └── resources.html    # Resources listing page
-└── static/               # CSS, JS, and image files (empty)
+├── app.py              # Main Flask application
+├── models.py           # SQLAlchemy database models
+├── requirements.txt    # Python dependencies
+├── whoosh_index.py     # Placeholder for search functionality
+├── templates/          # Jinja2 templates
+│   ├── base.html       # Base template with navigation
+│   ├── home.html       # Homepage
+│   ├── admin.html      # Admin upload page
+│   └── resources.html  # Resources listing page
+└── static/             # CSS, JS, and image assets
 ```
 
-## Installation
+## ⚙️ Installation & Setup
 
-1. **Clone or download the project**
-   ```bash
-   cd "d:\IR Project"
-   ```
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Shru2653/Academic-Resource-Integration-Portal.git
+cd "IR Project"
+```
 
-2. **Create a virtual environment** (recommended)
-   ```bash
-   python -m venv venv
-   venv\Scripts\activate  # On Windows
-   ```
+### 2. Create a Virtual Environment (Recommended)
+```bash
+python -m venv venv
+venv\Scripts\activate   # On Windows
+source venv/bin/activate  # On macOS/Linux
+```
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 3. Install Dependencies
+```bash
+pip install -r requirements.txt
+```
 
-4. **Run the application**
-   ```bash
-   python app.py
-   ```
+### 4. Run the Application
+```bash
+python app.py
+```
 
-5. **Access the application**
-   Open your browser and go to `http://localhost:5000`
+### 5. Access in Browser
+Open: http://localhost:5000
 
-## Database Schema
+## 🗄️ Database Schema
 
 ### Resource Model
-- `id`: Primary key (Integer)
-- `title`: Resource title (String, required)
-- `description`: Detailed description (Text, required)
-- `type`: Resource type - Book, Video, or Paper (String, required)
-- `tags`: Comma-separated tags (String)
-- `image_url`: URL to resource image (String, optional)
-- `link`: URL to the actual resource (String, required)
+| Field | Type | Description |
+|-------|------|-------------|
+| id | Integer | Primary key |
+| title | String | Resource title (required) |
+| description | Text | Detailed description (required) |
+| type | String | Resource type: Book, Video, or Paper |
+| tags | String | Comma-separated tags |
+| image_url | String | Optional image/thumbnail URL |
+| link | String | URL to the actual resource (required) |
 
-## Routes
+## 🌐 Routes
 
-- `/` - Homepage with welcome message and feature overview
-- `/admin` - Admin interface for uploading resources (placeholder)
-- `/resources` - Browse all resources with search and filtering (placeholder)
+- `/` → Homepage with welcome message & feature overview
+- `/resources` → Browse all resources with search & filtering (coming soon)
+- `/admin` → Admin panel for uploading/managing resources (restricted access)
 
-## Technologies Used
+## 🛠️ Technologies Used
 
-- **Flask**: Web framework
-- **SQLAlchemy**: Database ORM
-- **SQLite**: Database
-- **Bootstrap 5**: CSS framework
-- **Font Awesome**: Icons
-- **Jinja2**: Template engine
+- **Backend**: Flask (Python), SQLAlchemy ORM
+- **Database**: SQLite (default), PostgreSQL (recommended for production)
+- **Frontend**: Bootstrap 5, Font Awesome, Jinja2
+- **Search**: Whoosh (planned integration)
 
-## Future Enhancements
+## 🔮 Future Enhancements
 
-- [ ] Implement resource upload functionality
-- [ ] Add search and filtering capabilities using Whoosh
-- [ ] User authentication and authorization
-- [ ] Resource categories and advanced tagging
-- [ ] File upload support for PDFs and documents
-- [ ] Resource rating and review system
-- [ ] API endpoints for programmatic access
+- Resource upload functionality with image auto-fetch
+- Full-text search & filtering with Whoosh
+- Authentication & role-based authorization
+- Resource categories & tagging system
+- File upload support (PDFs, Docs)
+- Rating & review system
+- REST API endpoints for external integrations
 
-## Development
+## 👨‍💻 Development Notes
 
-The application is currently in development mode with debug enabled. For production deployment:
-
-1. Set `debug=False` in `app.py`
-2. Use a production WSGI server like Gunicorn
-3. Configure a production database (PostgreSQL recommended)
-4. Set up proper environment variables for sensitive configuration
-
-## License
-
-This project is open source and available under the MIT License.
+- Currently runs in debug mode (`debug=True` in app.py)
+- For production:
+  - Set `debug=False`
+  - Use a WSGI server like Gunicorn or uWSGI
+  - Switch to PostgreSQL or MySQL for scalability
+  - Configure environment variables for sensitive settings
