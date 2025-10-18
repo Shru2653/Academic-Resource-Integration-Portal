@@ -1,6 +1,95 @@
 {% extends "base.html" %}
 {% block title %}Resources - Academic Portal{% endblock %}
+
 {% block content %}
+<style>
+/* Resource Card Improvements */
+.resource-card {
+  transition: transform 0.2s ease-in-out;
+  border-radius: 12px !important;
+  overflow: hidden;
+}
+
+.resource-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
+}
+
+.resource-card .card-img-top {
+  height: 200px;
+  object-fit: cover;
+  object-position: center;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  border-bottom: 1px solid #e9ecef;
+}
+
+.resource-card .card-body {
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+}
+
+.resource-card .card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: 0.75rem;
+  color: #2c3e50;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.6rem;
+}
+
+.resource-card .card-text {
+  flex-grow: 1;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #6c757d;
+}
+
+.resource-type {
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  display: inline-block;
+  margin-bottom: 0.75rem;
+}
+
+.resource-tags {
+  margin-bottom: 1rem;
+}
+
+.resource-tags .badge {
+  font-size: 0.7rem;
+  margin-right: 0.25rem;
+  margin-bottom: 0.25rem;
+  background-color: #f8f9fa !important;
+  color: #495057 !important;
+  border: 1px solid #dee2e6 !important;
+}
+
+.resource-link {
+  margin-top: auto;
+  align-self: flex-start;
+}
+
+/* Image error handling */
+.placeholder-img {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 3rem;
+}
+</style>
 
 <!-- Search Bar -->
 <div class="row mb-4">
@@ -68,27 +157,40 @@
 <div class="row">
   {% if resources %}
     {% for r in resources %}
-      <div class="col-md-4 mb-4">
-        <div class="card shadow-sm h-100 border-0">
-          {% if r.image_url %}
-            <img src="{{ r.image_url }}" class="card-img-top" alt="{{ r.title }}" onerror="handleImageError(this)">
+      <div class="col-lg-4 col-md-6 mb-4">
+        <div class="card resource-card shadow-sm h-100 border-0">
+          {% if r.image_url and r.image_url.strip() and r.image_url != 'None' and not r.image_url.startswith('/static/images/placeholder') %}
+            <img src="{{ r.image_url }}" class="card-img-top" alt="{{ r.title }}" 
+                 data-type="{{ r.type }}"
+                 onerror="handleImageError(this)">
           {% else %}
-            <img src="{{ url_for('static', filename='images/placeholder.svg') }}" class="card-img-top" alt="{{ r.title }}">
+            {% if r.type == 'Book' %}
+              <img src="{{ url_for('static', filename='images/Bookplaceholderimg.jpg') }}" class="card-img-top" alt="{{ r.title }}">
+            {% elif r.type == 'Video' %}
+              <img src="{{ url_for('static', filename='images/Videoplaceholderimg.png') }}" class="card-img-top" alt="{{ r.title }}">
+            {% elif r.type == 'Paper' %}
+              <img src="{{ url_for('static', filename='images/Researchpaperplaceholderimg.jpeg') }}" class="card-img-top" alt="{{ r.title }}">
+            {% else %}
+              <img src="{{ url_for('static', filename='images/placeholder.svg') }}" class="card-img-top" alt="{{ r.title }}">
+            {% endif %}
           {% endif %}
           <div class="card-body">
             <h5 class="card-title">{{ r.title }}</h5>
-            <p class="card-text text-muted small">
+            <span class="resource-type">
               <i class="bi bi-tag-fill"></i> {{ r.type|capitalize }}
-            </p>
-            <p class="card-text">{{ r.description[:120] }}{% if r.description|length > 120 %}...{% endif %}</p>
+            </span>
+            <p class="card-text">{{ r.description[:150] }}{% if r.description|length > 150 %}...{% endif %}</p>
             {% if r.tags %}
-              <p>
-                {% for tag in r.tags.split(',') %}
-                  <span class="badge bg-light text-dark border">{{ tag.strip() }}</span>
+              <div class="resource-tags">
+                {% for tag in r.tags.split(',')[:4] %}
+                  <span class="badge">{{ tag.strip() }}</span>
                 {% endfor %}
-              </p>
+                {% if r.tags.split(',')|length > 4 %}
+                  <span class="badge">+{{ r.tags.split(',')|length - 4 }} more</span>
+                {% endif %}
+              </div>
             {% endif %}
-            <a href="{{ r.link }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">
+            <a href="{{ r.link }}" target="_blank" class="btn btn-sm btn-outline-primary resource-link">
               <i class="bi bi-box-arrow-up-right"></i> Open Resource
             </a>
           </div>
@@ -96,9 +198,35 @@
       </div>
     {% endfor %}
   {% else %}
-    <div class="col-12 text-center">
-      <p class="text-muted">No resources found for your search.</p>
+    <div class="col-12 text-center py-5">
+      <div class="text-muted">
+        <i class="bi bi-search display-1 mb-3"></i>
+        <h4>No resources found</h4>
+        <p>Try searching for a different topic or check your spelling.</p>
+      </div>
     </div>
   {% endif %}
 </div>
+
+<script>
+function handleImageError(img) {
+  img.onerror = null; // Prevent infinite loop
+  const resourceType = img.getAttribute('data-type');
+  console.log('Image error for type:', resourceType); // Debug log
+  
+  switch(resourceType) {
+    case 'Book':
+      img.src = "{{ url_for('static', filename='images/Bookplaceholderimg.jpg') }}";
+      break;
+    case 'Video':
+      img.src = "{{ url_for('static', filename='images/Videoplaceholderimg.png') }}";
+      break;
+    case 'Paper':
+      img.src = "{{ url_for('static', filename='images/Researchpaperplaceholderimg.jpeg') }}";
+      break;
+    default:
+      img.src = "{{ url_for('static', filename='images/placeholder.svg') }}";
+  }
+}
+</script>
 {% endblock %}
