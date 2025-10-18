@@ -7,24 +7,52 @@ __pycache__/
 *.pyo
 *.pyd
 .Python
+*.py[cod]
+*$py.class
 
 # Virtual environment
 venv/
 env/
 ENV/
+.venv/
 
 # IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
+.spyderproject
+.spyproject
 
 # OS files
 .DS_Store
 Thumbs.db
+*.tmp
 
 # Temporary database (keep main one)
 instance/resources.db
 
+# Flask instance folder
+instance/*.db
+!instance/academic_portal.db
+
 # Logs
 *.log
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
