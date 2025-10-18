@@ -2,211 +2,172 @@
 {% block title %}Resources - Academic Portal{% endblock %}
 
 {% block content %}
-<style>
-/* Resource Card Improvements */
-.resource-card {
-  transition: transform 0.2s ease-in-out;
-  border-radius: 12px !important;
-  overflow: hidden;
-}
 
-.resource-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15) !important;
-}
+<!-- Resources Header -->
+<section class="resources-header py-5">
+  <div class="container">
+    <div class="text-center mb-4" data-aos="fade-up">
+      <h1 class="page-title">Academic Resources</h1>
+      <p class="page-subtitle">Discover books, videos, and research papers</p>
+    </div>
 
-.resource-card .card-img-top {
-  height: 200px;
-  object-fit: cover;
-  object-position: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  border-bottom: 1px solid #e9ecef;
-}
+    <!-- Modern Search Bar -->
+    <div class="row justify-content-center mb-4" data-aos="fade-up" data-aos-delay="100">
+      <div class="col-lg-8 col-md-10">
+        <form class="modern-search-form" action="{{ url_for('resources') }}" method="get">
+          <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" name="q" class="form-control modern-search-input" 
+                   placeholder="Search by keywords, title, or tags..." 
+                   value="{{ search_query|default('') }}">
+            <!-- Preserve current filter when searching -->
+            {% if filter_type %}
+              <input type="hidden" name="type" value="{{ filter_type }}">
+            {% endif %}
+            <button class="btn modern-search-btn" type="submit">
+              <i class="fas fa-arrow-right"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
 
-.resource-card .card-body {
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  min-height: 280px;
-}
-
-.resource-card .card-title {
-  font-size: 1.1rem;
-  font-weight: 600;
-  line-height: 1.3;
-  margin-bottom: 0.75rem;
-  color: #2c3e50;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  min-height: 2.6rem;
-}
-
-.resource-card .card-text {
-  flex-grow: 1;
-  font-size: 0.9rem;
-  line-height: 1.5;
-  color: #6c757d;
-}
-
-.resource-type {
-  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
-  color: white !important;
-  font-size: 0.75rem;
-  font-weight: 500;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
-  display: inline-block;
-  margin-bottom: 0.75rem;
-}
-
-.resource-tags {
-  margin-bottom: 1rem;
-}
-
-.resource-tags .badge {
-  font-size: 0.7rem;
-  margin-right: 0.25rem;
-  margin-bottom: 0.25rem;
-  background-color: #f8f9fa !important;
-  color: #495057 !important;
-  border: 1px solid #dee2e6 !important;
-}
-
-.resource-link {
-  margin-top: auto;
-  align-self: flex-start;
-}
-
-/* Image error handling */
-.placeholder-img {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 3rem;
-}
-</style>
-
-<!-- Search Bar -->
-<div class="row mb-4">
-  <div class="col-md-8 mx-auto">
-    <form class="input-group search-bar" action="{{ url_for('resources') }}" method="get">
-      <input type="text" name="q" class="form-control" placeholder="Search by keywords, title, or tags..." value="{{ search_query|default('') }}">
-      <!-- Preserve current filter when searching -->
-      {% if filter_type %}
-        <input type="hidden" name="type" value="{{ filter_type }}">
-      {% endif %}
-      <button class="btn btn-primary px-4" type="submit"><i class="bi bi-search"></i> Search</button>
-    </form>
-  </div>
-</div>
-
-<!-- Filters -->
-<div class="row mb-4">
-  <div class="col-md-10 mx-auto text-center">
-    <div class="btn-group" role="group">
-      <a href="{{ url_for('resources', q=search_query) if search_query else url_for('resources') }}" 
-         class="btn btn-sm {% if not filter_type %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        All ({{ total_count }})
-      </a>
-      <a href="{{ url_for('resources', type='Book', q=search_query) if search_query else url_for('resources', type='Book') }}" 
-         class="btn btn-sm {% if filter_type=='Book' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        Books ({{ book_count }})
-      </a>
-      <a href="{{ url_for('resources', type='Video', q=search_query) if search_query else url_for('resources', type='Video') }}" 
-         class="btn btn-sm {% if filter_type=='Video' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        Videos ({{ video_count }})
-      </a>
-      <a href="{{ url_for('resources', type='Paper', q=search_query) if search_query else url_for('resources', type='Paper') }}" 
-         class="btn btn-sm {% if filter_type=='Paper' %}btn-primary{% else %}btn-outline-primary{% endif %}">
-        Papers ({{ paper_count }})
-      </a>
+    <!-- Modern Filter Pills -->
+    <div class="row justify-content-center" data-aos="fade-up" data-aos-delay="200">
+      <div class="col-auto">
+        <div class="filter-pills">
+          <a href="{{ url_for('resources', q=search_query) if search_query else url_for('resources') }}" 
+             class="filter-pill {% if not filter_type %}active{% endif %}">
+            <i class="fas fa-th-large me-1"></i>All <span class="count">({{ total_count }})</span>
+          </a>
+          <a href="{{ url_for('resources', type='Book', q=search_query) if search_query else url_for('resources', type='Book') }}" 
+             class="filter-pill {% if filter_type=='Book' %}active{% endif %}">
+            <i class="fas fa-book me-1"></i>Books <span class="count">({{ book_count }})</span>
+          </a>
+          <a href="{{ url_for('resources', type='Video', q=search_query) if search_query else url_for('resources', type='Video') }}" 
+             class="filter-pill {% if filter_type=='Video' %}active{% endif %}">
+            <i class="fas fa-video me-1"></i>Videos <span class="count">({{ video_count }})</span>
+          </a>
+          <a href="{{ url_for('resources', type='Paper', q=search_query) if search_query else url_for('resources', type='Paper') }}" 
+             class="filter-pill {% if filter_type=='Paper' %}active{% endif %}">
+            <i class="fas fa-file-alt me-1"></i>Papers <span class="count">({{ paper_count }})</span>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- Results Info -->
 {% if search_query or filter_type %}
-<div class="row mb-3">
-  <div class="col-12">
-    <div class="alert alert-info">
-      <i class="bi bi-info-circle"></i>
-      {% if search_query and filter_type %}
-        Showing {{ resources|length }} results for "<strong>{{ search_query }}</strong>" in <strong>{{ filter_type }}</strong> category
-      {% elif search_query %}
-        Showing {{ resources|length }} results for "<strong>{{ search_query }}</strong>"
-      {% elif filter_type %}
-        Showing {{ resources|length }} <strong>{{ filter_type }}</strong> resources
-      {% endif %}
-      
-      {% if search_query or filter_type %}
-        <a href="{{ url_for('resources') }}" class="btn btn-sm btn-outline-secondary ms-2">
-          <i class="bi bi-x-circle"></i> Clear all filters
-        </a>
-      {% endif %}
-    </div>
-  </div>
-</div>
-{% endif %}
-
-<!-- Search Results -->
-<div class="row">
-  {% if resources %}
-    {% for r in resources %}
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="card resource-card shadow-sm h-100 border-0">
-          {% if r.image_url and r.image_url.strip() and r.image_url != 'None' and not r.image_url.startswith('/static/images/placeholder') %}
-            <img src="{{ r.image_url }}" class="card-img-top" alt="{{ r.title }}" 
-                 data-type="{{ r.type }}"
-                 onerror="handleImageError(this)">
-          {% else %}
-            {% if r.type == 'Book' %}
-              <img src="{{ url_for('static', filename='images/Bookplaceholderimg.jpg') }}" class="card-img-top" alt="{{ r.title }}">
-            {% elif r.type == 'Video' %}
-              <img src="{{ url_for('static', filename='images/Videoplaceholderimg.png') }}" class="card-img-top" alt="{{ r.title }}">
-            {% elif r.type == 'Paper' %}
-              <img src="{{ url_for('static', filename='images/Researchpaperplaceholderimg.jpeg') }}" class="card-img-top" alt="{{ r.title }}">
-            {% else %}
-              <img src="{{ url_for('static', filename='images/placeholder.svg') }}" class="card-img-top" alt="{{ r.title }}">
+<section class="results-info py-3">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <div class="results-banner" data-aos="fade-up">
+          <div class="d-flex align-items-center justify-content-between flex-wrap">
+            <div class="results-text">
+              <i class="fas fa-info-circle me-2"></i>
+              {% if search_query and filter_type %}
+                Showing <strong>{{ resources|length }}</strong> results for "<strong>{{ search_query }}</strong>" in <strong>{{ filter_type }}</strong> category
+              {% elif search_query %}
+                Showing <strong>{{ resources|length }}</strong> results for "<strong>{{ search_query }}</strong>"
+              {% elif filter_type %}
+                Showing <strong>{{ resources|length }}</strong> <strong>{{ filter_type }}</strong> resources
+              {% endif %}
+            </div>
+            {% if search_query or filter_type %}
+              <a href="{{ url_for('resources') }}" class="btn btn-outline-secondary btn-sm modern-btn">
+                <i class="fas fa-times me-1"></i> Clear filters
+              </a>
             {% endif %}
-          {% endif %}
-          <div class="card-body">
-            <h5 class="card-title">{{ r.title }}</h5>
-            <span class="resource-type">
-              <i class="bi bi-tag-fill"></i> {{ r.type|capitalize }}
-            </span>
-            <p class="card-text">{{ r.description[:150] }}{% if r.description|length > 150 %}...{% endif %}</p>
-            {% if r.tags %}
-              <div class="resource-tags">
-                {% for tag in r.tags.split(',')[:4] %}
-                  <span class="badge">{{ tag.strip() }}</span>
-                {% endfor %}
-                {% if r.tags.split(',')|length > 4 %}
-                  <span class="badge">+{{ r.tags.split(',')|length - 4 }} more</span>
-                {% endif %}
-              </div>
-            {% endif %}
-            <a href="{{ r.link }}" target="_blank" class="btn btn-sm btn-outline-primary resource-link">
-              <i class="bi bi-box-arrow-up-right"></i> Open Resource
-            </a>
           </div>
         </div>
       </div>
-    {% endfor %}
-  {% else %}
-    <div class="col-12 text-center py-5">
-      <div class="text-muted">
-        <i class="bi bi-search display-1 mb-3"></i>
-        <h4>No resources found</h4>
-        <p>Try searching for a different topic or check your spelling.</p>
-      </div>
     </div>
-  {% endif %}
-</div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Resources Grid -->
+<section class="resources-grid-section py-4">
+  <div class="container">
+    {% if resources %}
+      <div class="row g-4">
+        {% for r in resources %}
+          <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12" data-aos="fade-up" data-aos-delay="{{ loop.index0 * 50 }}">
+            <div class="resource-card modern-card h-100">
+              <div class="card-image-container">
+                {% if r.image_url and r.image_url.strip() and r.image_url != 'None' and not r.image_url.startswith('/static/images/placeholder') %}
+                  <img src="{{ r.image_url }}" class="card-img-top" alt="{{ r.title }}" 
+                       data-type="{{ r.type }}"
+                       onerror="handleImageError(this)">
+                {% else %}
+                  {% if r.type == 'Book' %}
+                    <img src="{{ url_for('static', filename='images/Bookplaceholderimg.jpg') }}" class="card-img-top" alt="{{ r.title }}">
+                  {% elif r.type == 'Video' %}
+                    <img src="{{ url_for('static', filename='images/Videoplaceholderimg.png') }}" class="card-img-top" alt="{{ r.title }}">
+                  {% elif r.type == 'Paper' %}
+                    <img src="{{ url_for('static', filename='images/Researchpaperplaceholderimg.jpeg') }}" class="card-img-top" alt="{{ r.title }}">
+                  {% else %}
+                    <img src="{{ url_for('static', filename='images/placeholder.svg') }}" class="card-img-top" alt="{{ r.title }}">
+                  {% endif %}
+                {% endif %}
+                <div class="card-overlay">
+                  <span class="resource-type-badge type-{{ r.type.lower() }}">
+                    {% if r.type == 'Book' %}
+                      <i class="fas fa-book"></i>
+                    {% elif r.type == 'Video' %}
+                      <i class="fas fa-video"></i>
+                    {% elif r.type == 'Paper' %}
+                      <i class="fas fa-file-alt"></i>
+                    {% endif %}
+                    {{ r.type }}
+                  </span>
+                </div>
+              </div>
+              
+              <div class="card-body">
+                <h5 class="card-title">{{ r.title }}</h5>
+                <p class="card-description">{{ r.description[:120] }}{% if r.description|length > 120 %}...{% endif %}</p>
+                
+                {% if r.tags %}
+                  <div class="resource-tags mb-3">
+                    {% for tag in r.tags.split(',')[:3] %}
+                      <span class="tag-chip">{{ tag.strip() }}</span>
+                    {% endfor %}
+                    {% if r.tags.split(',')|length > 3 %}
+                      <span class="tag-chip more-tags">+{{ r.tags.split(',')|length - 3 }}</span>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                
+                <div class="card-footer">
+                  <a href="{{ r.link }}" target="_blank" class="btn btn-primary modern-btn w-100">
+                    <i class="fas fa-external-link-alt me-2"></i>Open Resource
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state text-center py-5" data-aos="fade-up">
+        <div class="empty-state-content">
+          <div class="empty-state-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3 class="empty-state-title">No resources found</h3>
+          <p class="empty-state-text">Try searching for a different topic or adjusting your filters.</p>
+          <a href="{{ url_for('resources') }}" class="btn btn-primary modern-btn">
+            <i class="fas fa-refresh me-2"></i>View All Resources
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</section>
 
 <script>
 function handleImageError(img) {

@@ -231,6 +231,70 @@ def admin_panel():
     resources = Resource.query.all()
     return render_template("admin.html", resources=resources)
 
+@app.route("/add_resource", methods=['GET', 'POST'])
+@login_required
+def add_resource():
+    if request.method == 'POST':
+        title = request.form.get('title','').strip()
+        description = request.form.get('description','').strip()
+        rtype = request.form.get('type','').strip()
+        tags = request.form.get('tags','').strip()
+        link = request.form.get('link','').strip()
+        image_url = request.form.get('image_url','').strip()
+
+        # If no image URL provided, set to None so template uses type-specific placeholder
+        if not image_url:
+            image_url = None
+
+        new_resource = Resource(
+            title=title,
+            description=description,
+            type=rtype,
+            tags=tags,
+            image_url=image_url,
+            link=link
+        )
+        db.session.add(new_resource)
+        db.session.commit()
+
+        flash("Resource added successfully!", "success")
+        return redirect(url_for('admin_panel'))
+
+    return render_template('add_resource.html')
+
+@app.route("/edit_resource/<int:resource_id>", methods=["GET", "POST"])
+@login_required
+def edit_resource(resource_id):
+    resource = Resource.query.get_or_404(resource_id)
+    if request.method == "POST":
+        resource.title = request.form.get("title", "").strip()
+        resource.description = request.form.get("description", "").strip()
+        resource.link = request.form.get("link", "").strip()
+        resource.type = request.form.get("type", "").strip()
+        resource.tags = request.form.get("tags", "").strip()
+        
+        # Handle image URL update
+        image_url = request.form.get('image_url', '').strip()
+        if not image_url:
+            image_url = None
+        resource.image_url = image_url
+        
+        db.session.commit()
+        
+        flash("Resource updated successfully.", "success")
+        return redirect(url_for("admin_panel"))
+    return render_template("edit_resource.html", resource=resource)
+
+@app.route("/delete_resource/<int:resource_id>", methods=["POST"])
+@login_required
+def delete_resource(resource_id):
+    resource = Resource.query.get_or_404(resource_id)
+    db.session.delete(resource)
+    db.session.commit()
+    
+    flash("Resource deleted successfully.", "success")
+    return redirect(url_for("admin_panel"))
+
 @app.route('/search')
 def search():
     """Redirect search requests to resources route for unified handling"""

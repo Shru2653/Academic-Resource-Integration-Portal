@@ -4,64 +4,138 @@
 
 {% block content %}
 <!-- Hero Section -->
-<div class="hero-section text-center">
+<section class="hero-section">
   <div class="container">
-    <h1 class="hero-title">📚 Academic Resource Integration Portal</h1>
-    <p class="hero-subtitle">
-      Your centralized hub for discovering, organizing, and accessing academic resources — books, videos, and research papers.
-    </p>
-    <div class="hero-buttons">
-      <a href="{{ url_for('resources') }}" class="btn-primary">
-        <i class="fas fa-book me-2"></i> Browse Resources
-      </a>
-      {% if current_user.is_authenticated %}
-        <a href="{{ url_for('admin_panel') }}" class="btn-secondary">
-          <i class="fas fa-cog me-2"></i> Admin Panel
-        </a>
-      {% else %}
-        <a href="{{ url_for('login') }}" class="btn-secondary">
-          <i class="fas fa-lock me-2"></i> Admin Login
-        </a>
-      {% endif %}
+    <div class="row align-items-center min-vh-100">
+      <div class="col-lg-6" data-aos="fade-right">
+        <div class="hero-content">
+          <h1 class="hero-title">
+            <span class="gradient-text">Academic Resource</span><br>
+            Integration Portal
+          </h1>
+          <p class="hero-subtitle">
+            Your hub for discovering, organizing, and accessing academic resources.
+            Explore books, videos, and research papers all in one place.
+          </p>
+          <div class="hero-buttons">
+            <a href="{{ url_for('resources') }}" class="btn btn-primary btn-lg modern-btn me-3">
+              <i class="fas fa-search me-2"></i>Browse Resources
+            </a>
+            {% if current_user.is_authenticated %}
+              <a href="{{ url_for('admin_panel') }}" class="btn btn-outline-primary btn-lg modern-btn">
+                <i class="fas fa-cog me-2"></i>Admin Panel
+              </a>
+            {% else %}
+              <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg modern-btn">
+                <i class="fas fa-sign-in-alt me-2"></i>Admin Login
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6" data-aos="fade-left">
+        <div class="hero-illustration">
+          <div class="floating-card card-1">
+            <i class="fas fa-book"></i>
+            <span>Books</span>
+          </div>
+          <div class="floating-card card-2">
+            <i class="fas fa-video"></i>
+            <span>Videos</span>
+          </div>
+          <div class="floating-card card-3">
+            <i class="fas fa-file-alt"></i>
+            <span>Papers</span>
+          </div>
+          <div class="hero-graphic">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 
 <!-- Features Section -->
-<div class="container mt-5">
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-book"></i>
-        </div>
-        <h3 class="feature-title">Books</h3>
-        <p class="feature-description">Access a wide collection of academic books and textbooks across various disciplines.</p>
-      </div>
+<section class="features-section py-5">
+  <div class="container">
+    <div class="text-center mb-5" data-aos="fade-up">
+      <h2 class="section-title">Why Choose Our Platform?</h2>
+      <p class="section-subtitle">Discover the power of integrated academic resources</p>
     </div>
-    <div class="col-md-4">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-video"></i>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-book"></i>
+          </div>
+          <h3 class="feature-title">Extensive Library</h3>
+          <p class="feature-description">Access thousands of academic books and textbooks across various disciplines and subjects.</p>
         </div>
-        <h3 class="feature-title">Videos</h3>
-        <p class="feature-description">Discover educational videos, lectures, and tutorials from leading institutions.</p>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="feature-card">
-        <div class="feature-icon">
-          <i class="fas fa-file-alt"></i>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-video"></i>
+          </div>
+          <h3 class="feature-title">Video Learning</h3>
+          <p class="feature-description">Watch educational videos, lectures, and tutorials from leading institutions worldwide.</p>
         </div>
-        <h3 class="feature-title">Research Papers</h3>
-        <p class="feature-description">Explore cutting-edge research papers and academic publications.</p>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <h3 class="feature-title">Research Papers</h3>
+          <p class="feature-description">Explore cutting-edge research papers and academic publications from top journals.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-search"></i>
+          </div>
+          <h3 class="feature-title">Smart Search</h3>
+          <p class="feature-description">Find exactly what you need with our intelligent search and filtering system.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="500">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-cloud"></i>
+          </div>
+          <h3 class="feature-title">Live Updates</h3>
+          <p class="feature-description">Get fresh content automatically fetched from multiple academic sources.</p>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="600">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <i class="fas fa-mobile-alt"></i>
+          </div>
+          <h3 class="feature-title">Mobile Friendly</h3>
+          <p class="feature-description">Access your resources anywhere, anytime with our responsive design.</p>
+        </div>
       </div>
     </div>
   </div>
-</div>
+</section>
 
-<!-- Footer -->
-<div class="text-center py-4 mt-5">
-  <small class="text-muted">Made with ❤️</small>
-</div>
+<!-- CTA Section -->
+<section class="cta-section py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 text-center" data-aos="zoom-in">
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to Start Learning?</h2>
+          <p class="cta-subtitle">Join thousands of students and researchers who trust our platform</p>
+          <a href="{{ url_for('resources') }}" class="btn btn-light btn-lg modern-btn">
+            <i class="fas fa-rocket me-2"></i>Get Started Now
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 {% endblock %}
